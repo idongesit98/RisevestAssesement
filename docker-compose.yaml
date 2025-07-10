@@ -1,11 +1,16 @@
 services:
-  # api:
-  #   build: .
-  #   ports:
-  #     - "4000:4000"
-  #   depends_on:
-  #     - postgres
-  #     - redis
+  api:
+    build:
+      context: ./api
+    working_dir: /app  
+    container_name: risevest-assesement
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./api/.env   
+    depends_on:
+      - postgres
+      - redis
   postgres:
     image: postgres:latest
     restart: always
