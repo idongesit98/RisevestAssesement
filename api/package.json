@@ -8,7 +8,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "npm run build && node dist/server.js --",
+    "start": "node dist/server.js --",
     "build": "prisma generate && tsc",
     "postbuild":"cpx \"public/**/*\" dist/public",
     "dev": "ts-node src/server.ts --"
