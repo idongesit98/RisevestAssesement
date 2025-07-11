@@ -90,7 +90,7 @@ const listRootFolders = (userId) => __awaiter(void 0, void 0, void 0, function* 
             where: { userId, parentFolderId: null },
             include: { subfolders: true, uploads: true }
         });
-        if (!getAllFolders) {
+        if (getAllFolders.length === 0) {
             return {
                 code: 404,
                 success: true,

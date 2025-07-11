@@ -23,9 +23,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUsers = exports.loginUser = exports.registerUser = void 0;
+exports.getAllUsers = exports.logOutUser = exports.loginUser = exports.registerUser = void 0;
 const client_1 = require("@prisma/client");
 const database_1 = __importDefault(require("../../utils/config/database"));
+const redis_1 = require("../../utils/config/redis");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const registerUser = (_a) => __awaiter(void 0, [_a], void 0, function* ({ name, email, password, role }) {
@@ -117,6 +118,35 @@ const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.loginUser = loginUser;
+const logOutUser = (sessionId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const deleted = yield redis_1.redisClient.del(`session:${sessionId}`);
+        if (deleted === 0) {
+            return {
+                code: 404,
+                success: false,
+                message: "Session not found or already revoked",
+                data: null
+            };
+        }
+        return {
+            code: 200,
+            success: true,
+            message: "User logged out successfully",
+            data: null
+        };
+    }
+    catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Logout error";
+        return {
+            code: 500,
+            success: false,
+            message: errorMessage,
+            data: null
+        };
+    }
+});
+exports.logOutUser = logOutUser;
 const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allUsers = yield database_1.default.user.findMany({});

@@ -24,13 +24,14 @@ const deleteUnSafeFile = () => __awaiter(void 0, void 0, void 0, function* () {
             yield cloudinary_1.default.uploader.destroy(file.publicId, { resource_type: file.resourceType });
             yield database_1.default.uploadedFiles.delete({ where: { id: file.id } });
             console.log(`Deleted unsafe file: ${file.filename}`);
+            console.log(`Found ${unSafeFile.length} unsafe files.`);
         }
         catch (error) {
             console.error(`Failed to delete ${file.filename}:`, error);
         }
     }
 });
-node_cron_1.default.schedule('*/10 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+node_cron_1.default.schedule('*/10 * * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Running unsafe file deletion every 10minutes............");
     yield deleteUnSafeFile();
 }));

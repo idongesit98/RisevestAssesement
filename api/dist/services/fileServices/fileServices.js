@@ -23,7 +23,6 @@ const uploadFileToCloudinary = (filePath_1, ...args_1) => __awaiter(void 0, [fil
             resource_type: "auto",
             chunk_size: 6000000
         });
-        console.log("Uploaded Result", result.public_id, result.resource_type, result.format, result.secure_url);
         return {
             code: 200,
             success: true,
@@ -98,7 +97,7 @@ exports.generateCloudinaryDownloadUrl = generateCloudinaryDownloadUrl;
 const getAllUploads = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allUploads = yield database_1.default.uploadedFiles.findMany({});
-        if (!allUploads) {
+        if (allUploads.length === 0) {
             return {
                 code: 404,
                 success: false,

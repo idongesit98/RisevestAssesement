@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fileHistory = void 0;
-const fileHistory_1 = require("../services/fileHistory/fileHistory");
+const fileHistoryService_1 = require("../services/fileHistory/fileHistoryService");
 const fileHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const fileId = req.params.fileId;
-        const fileResponse = yield (0, fileHistory_1.getFileHistory)(fileId);
+        const fileResponse = yield (0, fileHistoryService_1.getFileHistory)(fileId);
         res.status(fileResponse.code).json(fileResponse);
     }
     catch (error) {

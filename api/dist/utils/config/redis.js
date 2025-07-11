@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.redisClient = void 0;
+exports.connectRedis = connectRedis;
 const redis_1 = require("redis");
 exports.redisClient = (0, redis_1.createClient)({
     url: process.env.REDIS_URL
@@ -32,4 +33,4 @@ function connectRedis() {
         }
     });
 }
-connectRedis();
+//connectRedis();

@@ -24,7 +24,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     //  if (!req.user) {
     //     res.status(401).json({success:false,message:"Unauthorized"})
     //     return;
-    // }np
+    // }
     const filePath = req.file.path;
     console.log(filePath);
     const result = yield (0, fileServices_1.uploadFileToCloudinary)(filePath);

@@ -23,7 +23,6 @@ const uploadFileToCloudinary = (filePath_1, ...args_1) => __awaiter(void 0, [fil
             resource_type: "auto",
             chunk_size: 6000000
         });
-        console.log("Uploaded Result", result.public_id, result.resource_type, result.format, result.secure_url);
         return {
             code: 200,
             success: true,
