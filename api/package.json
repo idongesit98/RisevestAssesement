@@ -6,12 +6,12 @@
   "author": "Idongesit Samuel Robson",
   "type": "commonjs",
   "main": "server.js",
-  "scripts": {
-    "test": "jest",
-    "start": "npm run build && node dist/server.js --",
-    "build": "prisma generate && tsc",
-    "dev": "ts-node src/server.ts --"
-  }, 
+ "scripts": {
+  "test": "jest",
+  "start": "npm run build && npx prisma migrate deploy && node dist/server.js",
+  "build": "prisma generate && tsc",
+  "dev": "ts-node src/server.ts --"
+  },
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "@types/bcrypt": "^5.0.2",
@@ -50,6 +50,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supabase": "^2.30.4"
   }
 }

@@ -112,6 +112,5 @@
   },
   "include": [
     "src",
-    "tests"
-, "jest.config.js"  ]
+    "tests","jest.config.js"]
 }
