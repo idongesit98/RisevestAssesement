@@ -12,7 +12,7 @@
     "build": "prisma generate && tsc",
     "postbuild":"cpx \"public/**/*\" dist/public",
     "dev": "ts-node src/server.ts --"
-  },
+  }, 
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "@types/bcrypt": "^5.0.2",

@@ -9,7 +9,6 @@ export const uploadFileToCloudinary = async (filePath: string, folder: string = 
       resource_type: "auto",
       chunk_size:6_000_000
     });
-    console.log("Uploaded Result", result.public_id, result.resource_type, result.format, result.secure_url);
 
       return {
         code:200,
@@ -23,6 +22,7 @@ export const uploadFileToCloudinary = async (filePath: string, folder: string = 
         },
         message: "File uploaded to Cloudinary successfully",
       };
+      
   } catch (error:any) {
     console.error("Upload Error:", error?.message || error);
     return {

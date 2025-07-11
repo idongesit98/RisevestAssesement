@@ -110,7 +110,8 @@ export const moveFileToFolder = async(fileId:string,folderId:string,userId:strin
         message: "fileId, folderId, and userId are required",
         data: null
         };
-  }
+    }
+    
     try {
         const updatedFile = await prisma.uploadedFiles.update({
             where:{id:fileId},
