@@ -1,6 +1,6 @@
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary,TransformationOptions } from "cloudinary";
 
 cloudinary.config({
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,11 +10,37 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-   params: async () => ({
-    folder: "cloud_backup_files",
-    allowed_formats: ["jpg", "png", "jpeg", "pdf", "docx", "zip","mp4", "mov", "avi", "mkv","mp3", "wav", "aac"],
-    resource_type: "auto",
-  }),
+   params: async (req, file) => {
+    let transformation:TransformationOptions = [];
+
+    if (file.mimetype.startsWith("image/")) {
+      transformation = [
+        { width: 1024, crop: "limit" },
+        { quality: "auto" },
+        { fetch_format: "auto" },
+      ];
+    } else if (file.mimetype.startsWith("video/")) {
+      transformation = [
+        { quality: "auto" },
+        { fetch_format: "auto" },
+      ];
+    } else if (file.mimetype.startsWith("audio/")) {
+      transformation = [
+        { quality: "auto" },
+      ];
+    }
+
+    return {
+      folder: "cloud_backup_files",
+      allowed_formats: [
+        "jpg", "png", "jpeg", "pdf", "docx", "zip",
+        "mp4", "mov", "avi", "mkv",
+        "mp3", "wav", "aac"
+      ],
+      resource_type: "auto",
+      transformation,
+    };
+  }
 });
 
 
