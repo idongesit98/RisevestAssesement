@@ -19,30 +19,26 @@ const getStreamingUrl = (fileId) => __awaiter(void 0, void 0, void 0, function* 
     const file = yield database_1.default.uploadedFiles.findUnique({
         where: { id: fileId },
     });
-    if (!file || file.status === 'UNSAFE') {
+    if (!file || file.status === "UNSAFE") {
         return {
             code: 404,
             success: false,
             message: "File not found or marked as unsafe",
-            data: null
+            data: null,
         };
     }
-    const url = cloudinary_1.default.url(file.publicId, {
-        resource_type: file.resourceType,
-        secure: true,
-        sign_url: true,
-        format: "mp4",
-        transformation: [
+    const isVideo = file.resourceType === "video";
+    const isAudio = file.resourceType === "audio";
+    const url = cloudinary_1.default.url(file.publicId, Object.assign(Object.assign(Object.assign({ resource_type: file.resourceType, secure: true, sign_url: true }, (isVideo && { format: "mp4" })), (isAudio && { format: "mp3" })), { transformation: [
             {
                 quality: "auto",
-                fetch_format: "auto"
+                fetch_format: "auto",
             },
-        ],
-    });
+        ] }));
     return {
         code: 200,
         success: true,
-        streamUrl: url
+        streamUrl: url,
     };
 });
 exports.getStreamingUrl = getStreamingUrl;

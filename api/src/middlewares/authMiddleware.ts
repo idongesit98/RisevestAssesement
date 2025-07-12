@@ -1,36 +1,30 @@
 import { Request,Response,NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { redisClient } from "../utils/config/redis";
+import jwt, {JwtPayload} from "jsonwebtoken";
+import prisma from "../utils/config/database";
 
-export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ success: false, message: "Missing or invalid token" });
-        return
-    }
-
-    const token = authHeader.split(" ")[1];
-    try {
-        const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
-
-        // Check if session is valid
-        const sessionData = await redisClient.get(`session:${payload.sessionId}`);
-        if (!sessionData) {
-            res.status(401).json({ success: false, message: "Session invalid or expired" });
-            return;
-        }
-
-        req.user = payload; // Attach to request
-        next();
-    } catch (err) {
-        res.status(401).json({ success: false, message: "Unauthorized" });
+export const authenticate = async (req:Request,res:Response,next:NextFunction) =>{
+    const token = req.headers.authorization?.split(" ")[1]
+    if (!token) {
+        res.status(401).json({message:"No token provided"});
         return;
     }
-};
 
-export const isAuthenticated = (req:Request, res:Response, next:NextFunction) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ message: "Unauthorized" });
-};
+    try {
+         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+        if (!decoded || typeof decoded === "string" || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+        (req as any).user = user;
+
+        next();
+    } catch (error) {
+        res.status(401).json({message:"Invalid token"})
+        return;
+    }
+}

@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: ./api
-    working_dir: /app  
+    working_dir: /app   
     container_name: cloudbackup
     ports:
       - "8000:8000"
@@ -33,5 +33,7 @@ services:
 volumes:
   pgdatacloud:
   redisdatacloud:
+
+
 
        

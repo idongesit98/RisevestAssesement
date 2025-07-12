@@ -16,15 +16,21 @@ const node_cron_1 = __importDefault(require("node-cron"));
 const database_1 = __importDefault(require("./database"));
 const cloudinary_1 = __importDefault(require("./cloudinary"));
 const deleteUnSafeFile = () => __awaiter(void 0, void 0, void 0, function* () {
-    const unSafeFile = yield database_1.default.uploadedFiles.findMany({
-        where: { status: "UNSAFE" }
+    const unSafeFiles = yield database_1.default.uploadedFiles.findMany({
+        where: { status: "UNSAFE" },
     });
-    for (const file of unSafeFile) {
+    console.log(`Found ${unSafeFiles.length} unsafe files.`);
+    for (const file of unSafeFiles) {
         try {
-            yield cloudinary_1.default.uploader.destroy(file.publicId, { resource_type: file.resourceType });
-            yield database_1.default.uploadedFiles.delete({ where: { id: file.id } });
-            console.log(`Deleted unsafe file: ${file.filename}`);
-            console.log(`Found ${unSafeFile.length} unsafe files.`);
+            const result = yield cloudinary_1.default.uploader.destroy(file.publicId, { resource_type: file.resourceType });
+            if (result.result === "ok" || result.result === "not found") {
+                yield database_1.default.fileHistory.deleteMany({ where: { fileId: file.id } });
+                yield database_1.default.uploadedFiles.delete({ where: { id: file.id }, });
+                console.log(`Deleted unsafe file: ${file.filename}`);
+            }
+            else {
+                console.warn(`Could not delete from Cloudinary: ${file.filename}`, result);
+            }
         }
         catch (error) {
             console.error(`Failed to delete ${file.filename}:`, error);

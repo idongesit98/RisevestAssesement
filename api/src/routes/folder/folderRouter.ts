@@ -1,12 +1,13 @@
 import express from "express";
 import { createFolderHandler, getFolder, listFolder, moveFile } from "../../controllers/folderController";
-import passport from "passport";
+import { authenticate } from "../../middlewares/authMiddleware";
+
 
 const router = express.Router();
 
-router.get("/folders/:folderId",passport.authenticate("jwt",{session:false}),getFolder);
-router.get("/allfolders",passport.authenticate("jwt",{session:false}),listFolder)
-router.post("/create",passport.authenticate("jwt",{session:false}),createFolderHandler)
-router.put("/move",passport.authenticate("jwt",{session:false}),moveFile)
+router.get("/folders/:folderId",authenticate,getFolder);
+router.get("/allfolders",authenticate,listFolder)
+router.post("/create",authenticate,createFolderHandler)
+router.put("/move",authenticate,moveFile)
 
 export default router;

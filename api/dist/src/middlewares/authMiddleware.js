@@ -12,37 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isAuthenticated = exports.authenticate = void 0;
+exports.authenticate = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const redis_1 = require("../utils/config/redis");
+const database_1 = __importDefault(require("../utils/config/database"));
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ success: false, message: "Missing or invalid token" });
+    var _a;
+    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+    if (!token) {
+        res.status(401).json({ message: "No token provided" });
         return;
     }
-    const token = authHeader.split(" ")[1];
     try {
-        const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        // Check if session is valid
-        const sessionData = yield redis_1.redisClient.get(`session:${payload.sessionId}`);
-        if (!sessionData) {
-            res.status(401).json({ success: false, message: "Session invalid or expired" });
-            return;
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        if (!decoded || typeof decoded === "string" || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token" });
         }
-        req.user = payload; // Attach to request
+        const user = yield database_1.default.user.findUnique({ where: { id: decoded.id } });
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+        req.user = user;
         next();
     }
-    catch (err) {
-        res.status(401).json({ success: false, message: "Unauthorized" });
+    catch (error) {
+        res.status(401).json({ message: "Invalid token" });
         return;
     }
 });
 exports.authenticate = authenticate;
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.status(401).json({ message: "Unauthorized" });
-};
-exports.isAuthenticated = isAuthenticated;

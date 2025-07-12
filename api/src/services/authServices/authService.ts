@@ -1,6 +1,5 @@
 import { UserRole } from "@prisma/client";
 import prisma from "../../utils/config/database";
-import { redisClient } from "../../utils/config/redis";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
@@ -30,6 +29,7 @@ export const registerUser = async ({name,email,password,role}:UserParams) => {
                 role:normalizedRole
             }
         })
+       
         console.log("New user",newUser)
 
         const {password:_password, ...userWithoutPassword} = newUser;
@@ -38,7 +38,7 @@ export const registerUser = async ({name,email,password,role}:UserParams) => {
             success:true,
             message:'User signed up successfully',
             data:{
-                user:userWithoutPassword
+                user:userWithoutPassword,
             }
         }
     } catch (error) {
@@ -98,34 +98,6 @@ export const loginUser = async (email:string,password:string) => {
     }
 }
 
-export const logOutUser = async(sessionId:string) =>{
-    try {
-        const deleted = await redisClient.del(`session:${sessionId}`);
-        if (deleted === 0) {
-            return{
-                code:404,
-                success:false,
-                message:"Session not found or already revoked",
-                data:null
-            };
-        }
-
-        return{
-            code:200,
-            success:true,
-            message:"User logged out successfully",
-            data:null
-        }
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Logout error"
-        return{
-            code:500,
-            success:false,
-            message:errorMessage,
-            data:null
-        };
-    }
-}
 
 export const getAllUsers = async () => {
     try {
